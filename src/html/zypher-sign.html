@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>ZypherSign</title>
+
+  <link rel="stylesheet" href="../css/zypher-sign.css">
+  <link rel="stylesheet" href="../css/snackbar.css">
+
+  <script src="../libs/jquery-3.3.1.min.js"></script>
+  <script src="../libs/bundle.js"></script>
+</head>
+
+<body>
+
+  <div id="top-menu">
+    <h2>Zypher Sign</h2>
+
+    <!--<button id="other-button">OTHER</button>-->
+
+    <div class="dropdown">
+      <button class="dropbtn" id="other-button">OTHER</button>
+      <div class="dropdown-content">
+        <a id="verify-button">Verify</a>
+        <a id="witness-button">Witness</a>
+        <a id="save-button">Save</a>
+      </div>
+    </div>
+
+    <button id="upload-button">UPLOAD</button>
+    <input id="document-file" type="file" accept=".md, .mdsig"></input>
+    <button id="sign-button">SIGN</button>
+
+
+  </div>
+  <div id="body-div">
+
+    <div class="action-div" id="home-div">
+    </div>
+
+    <div class="action-div" id="sign-div">
+      <div id="doc-view"> </div>
+
+      <!--Witnesses-->
+      <div id="witnesses-div">
+      </div>
+
+    </div>
+
+    <div class="action-div" id="verify-div">
+    </div>
+  </div>
+
+  <div class="snackbar" id="snackbar">
+
+</body>
+
+</html>

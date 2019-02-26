@@ -1,0 +1,17 @@
+{
+  "name": "zypher-sign",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify ./src/js/zypher-sign.js -o ./src/libs/bundle.js",
+    "watch": "watchify ./src/js/zypher-sign.js -o ./src/libs/bundle.js"
+  },
+  "author": "“Noah <“noah.bouma@gmail.com”>",
+  "license": "ISC",
+  "dependencies": {
+    "authid-md-sig": "file:../authid-md-sig",
+    "browserfy": "^1.0.0",
+    "showdown": "^1.9.0"
+  }
+}

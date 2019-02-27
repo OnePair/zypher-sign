@@ -54421,7 +54421,6 @@ function showSignedDoc(fileName, signedDoc) {
     display: "none"
   });
 
-
   $("#verify-button").unbind();
   $("#verify-button").click(() => {
     verifyDoc(signedDoc);
@@ -54492,9 +54491,6 @@ function signDocument(fileName, document) {
   // 1) Get the attributes from the document
   var attributes = {};
 
-  /*
-   * TODO: Check for empty inputs.
-   */
   for (var i in fieldIds) {
     var value = $(util.format("#%s", fieldIds[i])).val();
 
@@ -54516,9 +54512,6 @@ function witnessDocument(fileName, document) {
   // 1) Get the attributes from the document
   var attributes = {};
 
-  /*
-   * TODO: Check for empty inputs.
-   */
   for (var i in fieldIds) {
     var value = $(util.format("#%s", fieldIds[i])).val();
 
@@ -54554,15 +54547,6 @@ function verifyDoc(signedDoc) {
       showSnackbar("Document signature is not valid!", 5000);
     }
   });
-
-  // 1. Verify the main sig
-  /*signedDoc.verify().then((verified) => {
-    var message = util.format("Verified against: %s", verified["id"]);
-    showSnackbar(message, 5000);
-  }).catch((err) => {
-    console.log("Error:", err);
-    showSnackbar("Document signature is not valid!", 5000);
-  });*/
 }
 
 function setWitnessesToView(witnesses) {
@@ -54572,7 +54556,6 @@ function setWitnessesToView(witnesses) {
   for (var i = 0; i < witnesses.length; i++) {
     var witness = witnesses[i];
     var witnessAttributes = witness.getAttributes();
-
 
     var button = $("<button/>", {
       id: "witnessButton" + (i + 1),
@@ -54631,7 +54614,6 @@ function setWitnessesToView(witnesses) {
   updateWitnessView();
 }
 
-
 function updateWitnessView() {
   var coll = $(".collapsible");
   var i;
@@ -54674,6 +54656,10 @@ function loadApp() {
   if (authID == undefined || authID == null) {
     alert("Warning: Application will not work. There is not AuthID driver installed.");
   }
+
+  $(window).bind('beforeunload', () => {
+    return 'Are you sure you want to leave?';
+  });
 }
 
 function showSnackbar(message, length) {

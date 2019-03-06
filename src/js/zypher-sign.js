@@ -166,7 +166,7 @@ function witnessDocument(fileName, document) {
     showSignedDoc(fileName, document)
     showSnackbar("Successfully witnessed the document!", 5000);
   }).catch((err) => {
-    showSnackbar("Could not witness doccument!", 5000);
+    showSnackbar("Could not witness document!", 5000);
   });
 }
 

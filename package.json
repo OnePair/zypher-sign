@@ -1,8 +1,8 @@
 {
   "name": "zypher-sign",
   "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "description": "An electronic signatures dapp which uses the authid-md-signatures protocol.",
+  "main": "src/html/zypher-sign.html",
   "scripts": {
     "build": "browserify ./src/js/zypher-sign.js -o ./src/libs/bundle.js",
     "watch": "watchify ./src/js/zypher-sign.js -o ./src/libs/bundle.js"

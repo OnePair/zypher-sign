@@ -7228,7 +7228,6 @@ module.exports = function xor (a, b) {
 
 }).call(this,require("buffer").Buffer)
 },{"buffer":47}],47:[function(require,module,exports){
-(function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -9007,8 +9006,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-}).call(this,require("buffer").Buffer)
-},{"base64-js":15,"buffer":47,"ieee754":98}],48:[function(require,module,exports){
+},{"base64-js":15,"ieee754":98}],48:[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 var Transform = require('stream').Transform
 var StringDecoder = require('string_decoder').StringDecoder
@@ -14494,7 +14492,7 @@ module.exports={
   "_id": "elliptic@6.4.1",
   "_inBundle": false,
   "_integrity": "sha512-BsXLz5sqX8OHcsh7CqBMztyXARmGQ3LWPtGjJi6DiJHq5C/qvi9P3OqgswKSDftbu8+IoI/QDTAm2fFnQ9SZSQ==",
-  "_location": "/browserify/elliptic",
+  "_location": "/watchify/elliptic",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
@@ -14507,13 +14505,13 @@ module.exports={
     "fetchSpec": "^6.0.0"
   },
   "_requiredBy": [
-    "/browserify/browserify-sign",
-    "/browserify/create-ecdh"
+    "/watchify/browserify-sign",
+    "/watchify/create-ecdh"
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.1.tgz",
   "_shasum": "c2d0b7776911b86722c632c3c06c60f2f819939a",
   "_spec": "elliptic@^6.0.0",
-  "_where": "/home/noah/.nvm/versions/node/v10.1.0/lib/node_modules/browserify/node_modules/browserify-sign",
+  "_where": "/home/noah/.nvm/versions/node/v10.1.0/lib/node_modules/watchify/node_modules/browserify-sign",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -17302,13 +17300,13 @@ var X509Certificate = asn.define('X509Certificate', function () {
 module.exports = X509Certificate
 
 },{"asn1.js":1}],109:[function(require,module,exports){
+(function (Buffer){
 // adapted from https://github.com/apatil/pemstrip
 var findProc = /Proc-Type: 4,ENCRYPTED[\n\r]+DEK-Info: AES-((?:128)|(?:192)|(?:256))-CBC,([0-9A-H]+)[\n\r]+([0-9A-z\n\r\+\/\=]+)[\n\r]+/m
-var startRegex = /^-----BEGIN ((?:.*? KEY)|CERTIFICATE)-----/m
-var fullRegex = /^-----BEGIN ((?:.*? KEY)|CERTIFICATE)-----([0-9A-z\n\r\+\/\=]+)-----END \1-----$/m
+var startRegex = /^-----BEGIN ((?:.* KEY)|CERTIFICATE)-----/m
+var fullRegex = /^-----BEGIN ((?:.* KEY)|CERTIFICATE)-----([0-9A-z\n\r\+\/\=]+)-----END \1-----$/m
 var evp = require('evp_bytestokey')
 var ciphers = require('browserify-aes')
-var Buffer = require('safe-buffer').Buffer
 module.exports = function (okey, password) {
   var key = okey.toString()
   var match = key.match(findProc)
@@ -17318,8 +17316,8 @@ module.exports = function (okey, password) {
     decrypted = new Buffer(match2[2].replace(/[\r\n]/g, ''), 'base64')
   } else {
     var suite = 'aes' + match[1]
-    var iv = Buffer.from(match[2], 'hex')
-    var cipherText = Buffer.from(match[3].replace(/[\r\n]/g, ''), 'base64')
+    var iv = new Buffer(match[2], 'hex')
+    var cipherText = new Buffer(match[3].replace(/[\r\n]/g, ''), 'base64')
     var cipherKey = evp(password, iv.slice(0, 8), parseInt(match[1], 10)).key
     var out = []
     var cipher = ciphers.createDecipheriv(suite, cipherKey, iv)
@@ -17334,7 +17332,8 @@ module.exports = function (okey, password) {
   }
 }
 
-},{"browserify-aes":21,"evp_bytestokey":83,"safe-buffer":145}],110:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"browserify-aes":21,"buffer":47,"evp_bytestokey":83}],110:[function(require,module,exports){
 var asn1 = require('./asn1')
 var aesid = require('./aesid.json')
 var fixProc = require('./fixProc')
@@ -18911,14 +18910,6 @@ exports.encode = exports.stringify = require('./encode');
 (function (process,global){
 'use strict'
 
-// limit of Crypto.getRandomValues()
-// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
-var MAX_BYTES = 65536
-
-// Node supports requesting up to this number of bytes
-// https://github.com/nodejs/node/blob/master/lib/internal/crypto/random.js#L48
-var MAX_UINT32 = 4294967295
-
 function oldBrowser () {
   throw new Error('Secure random number generation is not supported by this browser.\nUse Chrome, Firefox or Internet Explorer 11')
 }
@@ -18934,22 +18925,18 @@ if (crypto && crypto.getRandomValues) {
 
 function randomBytes (size, cb) {
   // phantomjs needs to throw
-  if (size > MAX_UINT32) throw new RangeError('requested too many random bytes')
+  if (size > 65536) throw new Error('requested too many random bytes')
+  // in case browserify  isn't using the Uint8Array version
+  var rawBytes = new global.Uint8Array(size)
 
-  var bytes = Buffer.allocUnsafe(size)
-
+  // This will not work in older browsers.
+  // See https://developer.mozilla.org/en-US/docs/Web/API/window.crypto.getRandomValues
   if (size > 0) {  // getRandomValues fails on IE if size == 0
-    if (size > MAX_BYTES) { // this is the max bytes crypto.getRandomValues
-      // can do at once see https://developer.mozilla.org/en-US/docs/Web/API/window.crypto.getRandomValues
-      for (var generated = 0; generated < size; generated += MAX_BYTES) {
-        // buffer.slice automatically checks if the end is past the end of
-        // the buffer so we don't have to here
-        crypto.getRandomValues(bytes.slice(generated, generated + MAX_BYTES))
-      }
-    } else {
-      crypto.getRandomValues(bytes)
-    }
+    crypto.getRandomValues(rawBytes)
   }
+
+  // XXX: phantomjs doesn't like a buffer being passed here
+  var bytes = Buffer.from(rawBytes.buffer)
 
   if (typeof cb === 'function') {
     return process.nextTick(function () {
@@ -26724,8 +26711,8 @@ exports.update = function(arr, parent) {
 
 // module.exports = $.extend(exports);
 
-}).call(this,{"isBuffer":require("../../../../../../.nvm/versions/node/v10.1.0/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
-},{"../../../../../../.nvm/versions/node/v10.1.0/lib/node_modules/browserify/node_modules/is-buffer/index.js":100,"htmlparser2":245,"parse5":188}],178:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../.nvm/versions/node/v10.1.0/lib/node_modules/watchify/node_modules/is-buffer/index.js")})
+},{"../../../../../../.nvm/versions/node/v10.1.0/lib/node_modules/watchify/node_modules/is-buffer/index.js":100,"htmlparser2":245,"parse5":188}],178:[function(require,module,exports){
 /**
  * Module dependencies
  */
@@ -39829,8 +39816,8 @@ module.exports = function (payload, secretOrPrivateKey, options, callback) {
   }
 };
 
-}).call(this,{"isBuffer":require("../../../../../.nvm/versions/node/v10.1.0/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
-},{"../../../../../.nvm/versions/node/v10.1.0/lib/node_modules/browserify/node_modules/is-buffer/index.js":100,"./lib/timespan":252,"jws":256,"lodash.includes":261,"lodash.isboolean":262,"lodash.isinteger":263,"lodash.isnumber":264,"lodash.isplainobject":265,"lodash.isstring":266,"lodash.once":267}],254:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../.nvm/versions/node/v10.1.0/lib/node_modules/watchify/node_modules/is-buffer/index.js")})
+},{"../../../../../.nvm/versions/node/v10.1.0/lib/node_modules/watchify/node_modules/is-buffer/index.js":100,"./lib/timespan":252,"jws":256,"lodash.includes":261,"lodash.isboolean":262,"lodash.isinteger":263,"lodash.isnumber":264,"lodash.isplainobject":265,"lodash.isstring":266,"lodash.once":267}],254:[function(require,module,exports){
 var JsonWebTokenError = require('./lib/JsonWebTokenError');
 var NotBeforeError    = require('./lib/NotBeforeError');
 var TokenExpiredError = require('./lib/TokenExpiredError');
@@ -54554,7 +54541,7 @@ function verifyDoc(signedDoc) {
         await witness.verify();
       }
 
-      var message = util.format("Verified. ID %s", verified["id"]);
+      var message = util.format("Signature verified. Signed by %s", verified["id"]);
       showSnackbar(message, 5000);
     } catch (err) {
       showSnackbar("Document signature is not valid!", 5000);
@@ -54611,7 +54598,7 @@ function setWitnessesToView(witnesses) {
       var witness = witnessButtonMap[buttonId];
 
       witness.verify().then((verified) => {
-        var message = util.format("Witness verified. ID %s", verified["id"]);
+        var message = util.format("Witness signature verified. Witnessed by %s", verified["id"]);
         showSnackbar(message, 5000);
       }).catch((err) => {
         showSnackbar("Witness signature is not valid!", 5000);
@@ -54652,10 +54639,10 @@ function setDownloadData(fileName, data) {
 
 }
 
-function download(filename, text) {
+function download(fileName, text) {
   var element = document.createElement("a");
   element.setAttribute("href", "data:text/mdsig;base64," + encodeURIComponent(text));
-  element.setAttribute('download', filename);
+  element.setAttribute('download', fileName);
 
   element.style.display = "none";
   document.body.appendChild(element);

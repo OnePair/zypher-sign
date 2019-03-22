@@ -184,7 +184,7 @@ function verifyDoc(signedDoc) {
         await witness.verify();
       }
 
-      var message = util.format("Verified. ID %s", verified["id"]);
+      var message = util.format("Signature verified. Signed by %s", verified["id"]);
       showSnackbar(message, 5000);
     } catch (err) {
       showSnackbar("Document signature is not valid!", 5000);
@@ -241,7 +241,7 @@ function setWitnessesToView(witnesses) {
       var witness = witnessButtonMap[buttonId];
 
       witness.verify().then((verified) => {
-        var message = util.format("Witness verified. ID %s", verified["id"]);
+        var message = util.format("Witness signature verified. Witnessed by %s", verified["id"]);
         showSnackbar(message, 5000);
       }).catch((err) => {
         showSnackbar("Witness signature is not valid!", 5000);
@@ -282,10 +282,10 @@ function setDownloadData(fileName, data) {
 
 }
 
-function download(filename, text) {
+function download(fileName, text) {
   var element = document.createElement("a");
   element.setAttribute("href", "data:text/mdsig;base64," + encodeURIComponent(text));
-  element.setAttribute('download', filename);
+  element.setAttribute('download', fileName);
 
   element.style.display = "none";
   document.body.appendChild(element);

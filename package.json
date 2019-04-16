@@ -10,7 +10,7 @@
   "author": "“Noah <“noah.bouma@gmail.com”>",
   "license": "ISC",
   "dependencies": {
-    "authid-md-sig": "file:../authid-md-sig",
+    "authid-md-sig": "git+https://github.com/OnePair/authid-md-sig.git#9a7eafc6210c31cc712de0408dfcea2558995c14",
     "browserfy": "^1.0.0",
     "showdown": "^1.9.0"
   }

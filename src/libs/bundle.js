@@ -24512,10 +24512,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var witness_1 = require("./witness");
 var cheerio_1 = __importDefault(require("cheerio"));
-var crypto_1 = __importDefault(require("crypto"));
+var crypto = __importStar(require("crypto"));
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var AuthIDMDSig = /** @class */ (function () {
     function AuthIDMDSig(authID, mdDoc, attributes, sig, witnesses) {
@@ -24565,7 +24572,7 @@ var AuthIDMDSig = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        docHash = crypto_1.default.createHash("sha256").update(this.mdDoc).digest("hex");
+                        docHash = crypto.createHash("sha256").update(this.mdDoc).digest("hex");
                         claims = {
                             docHash: docHash,
                             attributes: attributes
@@ -24592,28 +24599,32 @@ var AuthIDMDSig = /** @class */ (function () {
     AuthIDMDSig.prototype.verify = function () {
         var _this = this;
         return new Promise(function (onSuccess, onError) { return __awaiter(_this, void 0, void 0, function () {
-            var docHash, signedValues, issuer, issuerId, processor, processorIssuer, verified, verificationResult, err_2;
+            var docHash, signedValues, issuerId, issuer, processor, processorIssuer, verified, verificationResult, err_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        docHash = crypto_1.default.createHash("sha256").update(this.mdDoc).digest("hex");
+                        docHash = crypto.createHash("sha256").update(this.mdDoc).digest("hex");
                         signedValues = jsonwebtoken_1.default.decode(this.sig);
                         // 3) Verify the dochash against the one in the signature
                         if (docHash != signedValues["docHash"])
                             throw new Error("Document hash does not match!");
-                        issuer = signedValues["issuer"];
                         issuerId = void 0;
-                        if (issuer["type"] == "processor") {
-                            processor = jsonwebtoken_1.default.decode(issuer["processor"]);
-                            processorIssuer = processor["issuer"];
-                            if ("did" in processorIssuer)
-                                issuerId = processorIssuer["did"];
-                            else
-                                issuerId = processorIssuer["id"];
-                        }
-                        else {
-                            issuerId = issuer["did"];
+                        if ("name" in signedValues)
+                            issuerId = signedValues["name"];
+                        else { // The issuer is just a DID
+                            issuer = signedValues["issuer"];
+                            if (issuer["type"] == "processor") {
+                                processor = jsonwebtoken_1.default.decode(issuer["processor"]);
+                                processorIssuer = processor["issuer"];
+                                if ("did" in processorIssuer)
+                                    issuerId = processorIssuer["did"];
+                                else
+                                    issuerId = processorIssuer["id"];
+                            }
+                            else {
+                                issuerId = issuer["did"];
+                            }
                         }
                         return [4 /*yield*/, this.authID.verifyJwt(this.sig, issuerId)];
                     case 1:
@@ -24725,11 +24736,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var crypto_1 = __importDefault(require("crypto"));
+var crypto = __importStar(require("crypto"));
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var Witness = /** @class */ (function () {
     function Witness(authID, mdDoc, subjectSig, attributes, sig) {
@@ -24747,8 +24765,8 @@ var Witness = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        docHash = crypto_1.default.createHash("sha256").update(this.mdDoc).digest("hex");
-                        subjectSigHash = crypto_1.default.createHash("sha256").update(this.subjectSig).digest("hex");
+                        docHash = crypto.createHash("sha256").update(this.mdDoc).digest("hex");
+                        subjectSigHash = crypto.createHash("sha256").update(this.subjectSig).digest("hex");
                         claims = {
                             docHash: docHash,
                             subjectSigHash: subjectSigHash,
@@ -24778,10 +24796,10 @@ var Witness = /** @class */ (function () {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         signedValues = jsonwebtoken_1.default.decode(this.sig);
-                        docHash = crypto_1.default.createHash("sha256").update(this.mdDoc).digest("hex");
+                        docHash = crypto.createHash("sha256").update(this.mdDoc).digest("hex");
                         if (docHash != signedValues["docHash"])
                             throw new Error("Document hash does not match!");
-                        subjectSigHash = crypto_1.default.createHash("sha256").update(this.subjectSig).digest("hex");
+                        subjectSigHash = crypto.createHash("sha256").update(this.subjectSig).digest("hex");
                         if (subjectSigHash != signedValues["subjectSigHash"])
                             throw new Error("Wrong subject!");
                         issuer = signedValues["issuer"];
